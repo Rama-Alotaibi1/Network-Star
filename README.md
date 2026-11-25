@@ -158,7 +158,8 @@ network-star/
 ## Author
 
 **Rama**, AI specialist based in Riyadh, Saudi Arabia.
+This project was developed as part of the Applied Natural Language Processing training program offered by @SDAIAAcademy.
 
 <p align="center"><img src="assets/logo.svg" alt="network*" width="220"></p>
 
-This project was developed as part of the Applied Natural Language Processing training program offered by @SDAIAAcademy.
+
