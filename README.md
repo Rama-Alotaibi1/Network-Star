@@ -18,6 +18,12 @@ It started as coursework and is organised as a single notebook, with a small int
 
 > **Demo:** [Open the interactive demo](https://YOUR_USERNAME.github.io/network-star/) · **Notebook:** [`notebooks/network_pipeline.ipynb`](notebooks/network_pipeline.ipynb)
 
+<p align="center">
+  <a href="https://YOUR_USERNAME.github.io/network-star/"><img src="assets/demo_screenshot.png" alt="network* interactive demo" width="85%"></a>
+</p>
+
+The demo runs normalisation and PII masking live in the browser using the notebook's rules. Retrieval, reranking and tokenizer results are recorded outputs from the notebook.
+
 ---
 
 ## Why this project
@@ -145,8 +151,10 @@ network-star/
 ├── requirements.txt
 ├── notebooks/
 │   └── network_pipeline.ipynb
+├── docs/
+│   └── index.html            # GitHub Pages demo
 └── assets/
-    ├── banner.png  logo.svg  pipeline.png
+    ├── banner.png  logo.svg  pipeline.png  demo_screenshot.png
     └── tokenizer_audit.png  parameter_audit.png  attention_map.png
 ```
 

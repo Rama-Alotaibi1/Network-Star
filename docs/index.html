@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>network* · Telecom ticket NLP demo</title>
+<meta name="description" content="Interactive demo of the network* pipeline: normalisation and PII masking for Arabic and English telecom support tickets.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%236D35C9'/%3E%3Ccircle cx='50' cy='58' r='9' fill='white'/%3E%3Ccircle cx='30' cy='32' r='6' fill='%23B79CFF'/%3E%3Ccircle cx='72' cy='26' r='6' fill='%23B79CFF'/%3E%3C/svg%3E">
+<style>
+:root{
+  --navy:#0A1330; --navy2:#111D4D; --navy3:#18265F; --purple-d:#3A1670; --purple:#6D35C9;
+  --lav:#B79CFF; --text:#EAE6FF; --mute:#A9A3D6; --line:#2B3570; --amber:#F5C76B; --green:#7EE0B0;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--navy);color:var(--text);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic","Segoe UI Arabic",Tahoma,sans-serif;
+  background-image:radial-gradient(1200px 500px at 85% -10%,rgba(109,53,201,.35),transparent 60%),radial-gradient(900px 400px at -10% 10%,rgba(58,22,112,.45),transparent 60%);background-repeat:no-repeat}
+a{color:var(--lav)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
+.brand b{font-size:24px;letter-spacing:-.5px}
+.brand b i{font-style:normal;color:var(--lav)}
+nav a{margin-left:20px;text-decoration:none;color:var(--mute);font-size:15px}
+nav a:hover{color:var(--text)}
+.hero{padding:34px 0 18px}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:0 0 14px;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(90deg,var(--lav),#8F5BFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:680px;color:var(--mute);margin:0 0 6px;font-size:18px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.04);padding:5px 13px;border-radius:99px;font-size:14px;color:var(--text)}
+.note{display:flex;gap:10px;align-items:flex-start;margin:22px 0 0;padding:12px 16px;border:1px solid rgba(183,156,255,.35);background:rgba(109,53,201,.14);border-radius:14px;font-size:14.5px;color:var(--text)}
+.note svg{flex:none;margin-top:3px}
+section{margin:46px 0}
+h2{font-size:26px;margin:0 0 6px;letter-spacing:-.4px}
+.sub{color:var(--mute);margin:0 0 20px}
+.card{background:var(--navy2);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}nav{display:none}}
+label.h{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+textarea{width:100%;min-height:170px;resize:vertical;background:var(--navy);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:14px;font:inherit;line-height:1.7}
+textarea:focus{outline:2px solid var(--purple);border-color:transparent}
+.samples{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+button.chip{cursor:pointer;border:1px solid var(--line);background:var(--navy3);color:var(--text);padding:7px 13px;border-radius:99px;font:inherit;font-size:14px}
+button.chip:hover,button.chip.on{border-color:var(--lav);background:var(--purple-d)}
+.toggle{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14.5px;color:var(--mute)}
+.toggle input{accent-color:var(--purple);width:18px;height:18px}
+.toggle em{font-style:normal;color:var(--amber);font-size:13px}
+.out{background:var(--navy);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:78px;line-height:1.9;word-break:break-word}
+.step{margin-bottom:18px}
+.tag{display:inline-block;padding:0 9px;border-radius:7px;font-size:.88em;font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;direction:ltr;unicode-bidi:isolate}
+.tag.m{background:var(--purple);color:#fff}
+.tag.x{background:rgba(126,224,176,.18);color:var(--green);border:1px solid rgba(126,224,176,.5)}
+.tag.w{background:rgba(245,199,107,.14);color:var(--amber);border:1px dashed var(--amber)}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:14px}
+.stat{padding:5px 12px;border-radius:10px;background:var(--navy3);border:1px solid var(--line);color:var(--mute)}
+.stat b{color:var(--text)}
+.warn{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px solid rgba(245,199,107,.5);background:rgba(245,199,107,.08);font-size:14.5px}
+.warn b{color:var(--amber)}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.node{padding:10px 15px;border-radius:12px;border:1px solid var(--line);background:var(--navy2);font-size:15px}
+.node.live{border-color:var(--green);background:rgba(126,224,176,.1)}
+.node.pre{background:linear-gradient(135deg,var(--navy2),var(--purple-d));border-color:rgba(183,156,255,.5)}
+.arrow{color:var(--lav)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:14px;color:var(--mute)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px}
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:500;font-size:13px;text-transform:uppercase;letter-spacing:.07em}
+td.ar{direction:rtl;text-align:right}
+td.n{font-family:ui-monospace,Menlo,Consolas,monospace;text-align:right;white-space:nowrap}
+.pos{color:var(--green)} .neg{color:#FF9DB0}
+.bars .row{display:grid;grid-template-columns:90px 1fr 56px;gap:12px;align-items:center;margin:10px 0}
+.bars .bar{height:14px;border-radius:99px;background:var(--navy);overflow:hidden;border:1px solid var(--line)}
+.bars .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--lav))}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.label-list{display:flex;flex-wrap:wrap;gap:8px}
+footer{border-top:1px solid var(--line);margin-top:56px;padding:26px 0 40px;color:var(--mute);font-size:14.5px}
+footer ul{margin:8px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="#top">
+      <svg width="38" height="38" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#111D4D"/><stop offset="1" stop-color="#6D35C9"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#g)"/><g stroke="#B79CFF" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"><line x1="30" y1="32" x2="72" y2="26"/><line x1="30" y1="32" x2="50" y2="58"/><line x1="72" y1="26" x2="50" y2="58"/><line x1="50" y1="58" x2="24" y2="76"/><line x1="50" y1="58" x2="78" y2="74"/><line x1="24" y1="76" x2="78" y2="74"/></g><circle cx="30" cy="32" r="6" fill="#B79CFF"/><circle cx="72" cy="26" r="6" fill="#B79CFF"/><circle cx="50" cy="58" r="8.5" fill="#fff"/><circle cx="24" cy="76" r="6" fill="#B79CFF"/><circle cx="78" cy="74" r="6" fill="#B79CFF"/></svg>
+      <b>network<i>*</i></b>
+    </a>
+    <nav><a href="#try">Try it</a><a href="#retrieval">Retrieval</a><a href="#tokenizer">Tokenizer</a><a href="#limits">Limitations</a><a href="https://github.com/YOUR_USERNAME/network-star">GitHub</a></nav>
+  </header>
+
+  <div class="hero" id="top">
+    <h1>Telecom support tickets, <span>cleaned and protected</span> before any model sees them.</h1>
+    <p>An interactive look at the network* pipeline for Arabic and English customer-support tickets.</p>
+    <div class="pills"><span class="pill">Normalise</span><span class="pill">Mask PII</span><span class="pill">Classify</span><span class="pill">Retrieve</span><span class="pill">Rerank</span><span class="pill">Evaluate</span></div>
+    <div class="note">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B79CFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span><b>What is live and what is not.</b> Normalisation and PII masking run in your browser with the same rules as the notebook. The retrieval, reranking and tokenizer results further down are recorded outputs from the notebook, not live model calls. Nothing you type leaves your device.</span>
+    </div>
+  </div>
+
+  <section id="try">
+    <h2>Try it: normalise and mask</h2>
+    <p class="sub">Pick a sample ticket or paste your own. All personal details in the samples are fictional.</p>
+    <div class="card">
+      <div class="samples" id="samples"></div>
+      <div class="grid">
+        <div>
+          <label class="h" for="inp">Raw ticket</label>
+          <textarea id="inp" dir="auto" spellcheck="false" placeholder="Paste an Arabic or English ticket…"></textarea>
+          <label class="toggle"><input type="checkbox" id="ext"> Extended masking <em>demo only, not in the notebook</em></label>
+        </div>
+        <div>
+          <div class="step">
+            <label class="h">1 · Normalised</label>
+            <div class="out" id="o1" dir="auto"></div>
+          </div>
+          <div class="step" style="margin-bottom:0">
+            <label class="h">2 · PII masked</label>
+            <div class="out" id="o2" dir="auto"></div>
+          </div>
+        </div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div id="warn"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where this fits</h2>
+    <p class="sub">The full pipeline from the notebook, with what this page runs live.</p>
+    <div class="card">
+      <div class="flow">
+        <span class="node">Raw ticket</span><span class="arrow">→</span>
+        <span class="node live">Normalise</span><span class="arrow">→</span>
+        <span class="node live">Mask PII</span><span class="arrow">→</span>
+        <span class="node pre">Tokenise + audit</span><span class="arrow">→</span>
+        <span class="node pre">Classify</span><span class="arrow">→</span>
+        <span class="node pre">Retrieve</span><span class="arrow">→</span>
+        <span class="node pre">Rerank</span><span class="arrow">→</span>
+        <span class="node pre">Evaluate</span>
+      </div>
+      <div class="legend"><span><span class="dot" style="background:var(--green)"></span>Runs live in this page</span><span><span class="dot" style="background:var(--lav)"></span>Recorded from the notebook</span></div>
+    </div>
+  </section>
+
+  <section id="retrieval">
+    <h2>Retrieval and reranking</h2>
+    <p class="sub">Recorded notebook output. Sentence embeddings with FAISS find similar tickets, then a cross-encoder reranks candidates.</p>
+    <div class="cols">
+      <div class="card">
+        <label class="h">Semantic search · top 2</label>
+        <p dir="rtl" style="margin:0 0 10px;font-size:18px"><span style="color:var(--mute);font-size:13px;direction:ltr;unicode-bidi:isolate">Query</span> الإنترنت سرعته بطيئة</p>
+        <table>
+          <tr><th>#</th><th style="text-align:right">Retrieved ticket</th></tr>
+          <tr><td class="n" style="text-align:left">1</td><td class="ar">الإنترنت سرعته بطيئة</td></tr>
+          <tr><td class="n" style="text-align:left">2</td><td class="ar">الشبكة ضعيفة في حارتي</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <label class="h">Cross-encoder rerank scores</label>
+        <p dir="rtl" style="margin:0 0 10px;font-size:18px"><span style="color:var(--mute);font-size:13px;direction:ltr;unicode-bidi:isolate">Query</span> الكهرباء لا تعمل</p>
+        <table>
+          <tr><th style="text-align:right">Candidate</th><th style="text-align:right">Score</th></tr>
+          <tr><td class="ar">الكهرباء لا تعمل</td><td class="n pos">4.36</td></tr>
+          <tr><td class="ar">مشكلة في سرعة التحميل</td><td class="n neg">−3.66</td></tr>
+          <tr><td class="ar">الإنترنت سرعته بطيئة</td><td class="n neg">−3.91</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <label class="h">Classifier topics (CAMeLBERT, fine-tuned)</label>
+      <div class="label-list"><span class="pill">outage</span><span class="pill">billing</span><span class="pill">slow_internet</span><span class="pill">coverage</span><span class="pill">app_services</span></div>
+      <p class="sub" style="margin:12px 0 0">Predictions are not shown here on purpose: the notebook trains on only 6 examples, so there is no result worth presenting yet.</p>
+    </div>
+  </section>
+
+  <section id="tokenizer">
+    <h2>Tokenizer audit</h2>
+    <p class="sub">Recorded notebook output for <code>distilbert-base-multilingual-cased</code> on the six sample tickets.</p>
+    <div class="card bars">
+      <label class="h">Average fertility (tokens per word)</label>
+      <div class="row"><span>Arabic</span><div class="bar"><i style="width:84%"></i></div><b>2.95</b></div>
+      <div class="row"><span>English</span><div class="bar"><i style="width:47%"></i></div><b>1.66</b></div>
+      <div class="stats"><span class="stat">p95 length <b>62.25</b> tokens</span><span class="stat">UNK rate <b>0.0</b></span><span class="stat">Arabic costs about <b>1.8×</b> more tokens per word</span></div>
+    </div>
+  </section>
+
+  <footer id="limits">
+    <b style="color:var(--text)">Limitations</b>
+    <ul>
+      <li>The notebook’s masking covers emails and Saudi mobile numbers written as <code>05XXXXXXXX</code>. National IDs, IBANs, names and spaced phone numbers are not masked, which this page flags when it spots them.</li>
+      <li>All data is a small hand-written sample. Scores are illustrative, not benchmark results.</li>
+    </ul>
+    <p style="margin-top:18px">Built by Rama · <a href="https://github.com/YOUR_USERNAME/network-star">Source and notebook on GitHub</a></p>
+  </footer>
+</div>
+
+<script>
+// Same rules as the notebook
+function normalize(t){
+  t = String(t).replace(/،/g,"").replace(/,/g,"");
+  return t.replace(/\s+/g," ").trim();
+}
+const RE = {
+  email: /\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b/g,
+  phone: /\b05\d{8}\b/g
+};
+// Extended rules (demo only)
+const EXT = {
+  iban: /\bSA\d{22}\b/g,
+  id:   /\b[12]\d{9}\b/g,
+  phoneSp: /\b05\d\s?\d{3}\s?\d{4}\b/g
+};
+function maskCore(t){
+  return t.replace(RE.email,"[EMAIL]").replace(RE.phone,"[PHONE]");
+}
+function maskExt(t){
+  return maskCore(t).replace(EXT.iban,"[IBAN]").replace(EXT.phoneSp,"[PHONE]").replace(EXT.id,"[ID]");
+}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function paint(s){
+  return esc(s).replace(/\[(EMAIL|PHONE|IBAN|ID)\]/g,'<span class="tag m">[$1]</span>');
+}
+function findLeaks(masked){
+  const out=[];
+  const add=(re,label)=>{ (masked.match(re)||[]).forEach(v=>out.push({v,label})) };
+  add(EXT.iban,"IBAN");
+  add(EXT.phoneSp,"phone number with spaces");
+  add(EXT.id,"10-digit ID or number");
+  return out;
+}
+
+const SAMPLES = [
+  {name:"Arabic · phone + email", t:"السَّلام عليكم، أنا خالد العتيبي، رقم جوالي 0555123454 وأرغب بإلغاء باقة الإنترنت على الرقم 0551234567 أو email@example.com"},
+  {name:"Arabic · ID + IBAN", t:"أنا سارة الغامدي، هويتي الوطنية 1098765432 والآيبان SA0380000000608010167519 لم يصلني المبلغ المسترجع من الفاتورة راسلوني على test@gmail.com أو 0509876543"},
+  {name:"Arabic · app + speed", t:"تطبيق MyTelecom يعطيني خطأ عند الدخول والســـرعة ضعيفة، تواصلوا معي على sara.k@example.com أو على الرقم 0509876543"},
+  {name:"English · router", t:"Hi, I'm Michael Brown. Please call me on 055 123 4567 because my router keeps disconnecting"},
+  {name:"English · double charge", t:"I was charged twice on 2025-03-14 for my data plan. Email me at m.brown@example.com, ID 1087654321"}
+];
+
+const $ = id => document.getElementById(id);
+function render(){
+  const raw = $("inp").value;
+  const norm = normalize(raw);
+  const ext = $("ext").checked;
+  const masked = ext ? maskExt(norm) : maskCore(norm);
+  $("o1").textContent = norm || "—";
+  $("o2").innerHTML = norm ? paint(masked) : "—";
+  const counts = {};
+  (masked.match(/\[(EMAIL|PHONE|IBAN|ID)\]/g)||[]).forEach(k=>counts[k]=(counts[k]||0)+1);
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  const words = norm ? norm.split(" ").length : 0;
+  let s = `<span class="stat">Words <b>${words}</b></span><span class="stat">Items masked <b>${total}</b></span>`;
+  Object.entries(counts).forEach(([k,v])=>{ s += `<span class="stat"><b>${v}</b> × ${k}</span>` });
+  $("stats").innerHTML = s;
+  const leaks = ext ? [] : findLeaks(masked);
+  $("warn").innerHTML = leaks.length
+    ? `<div class="warn"><b>Not masked by the notebook’s rules:</b> ` + leaks.map(l=>`<span class="tag w">${esc(l.v)}</span> <small>${l.label}</small>`).join(" &nbsp; ") + `<br><small>Turn on extended masking to see these protected. Names are never detected by either mode.</small></div>`
+    : "";
+}
+const box = $("samples");
+SAMPLES.forEach((x,i)=>{
+  const b=document.createElement("button");
+  b.className="chip"; b.type="button"; b.textContent=x.name;
+  b.onclick=()=>{ $("inp").value=x.t; [...box.children].forEach(c=>c.classList.remove("on")); b.classList.add("on"); render(); };
+  box.appendChild(b);
+});
+$("inp").addEventListener("input",()=>{[...box.children].forEach(c=>c.classList.remove("on")); render()});
+$("ext").addEventListener("change",render);
+box.children[1].click();
+</script>
+</body>
+</html>
