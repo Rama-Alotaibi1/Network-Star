@@ -10,9 +10,9 @@
   <img alt="Languages" src="https://img.shields.io/badge/Languages-Arabic%20%7C%20English-0A1330?style=for-the-badge">
 </p>
 
-# network\*
+# Network\*
 
-**network\*** is an NLP pipeline for **telecom customer-support tickets** written in **Arabic and English**. It takes a raw ticket and walks it through cleaning, personal-data masking, tokenizer analysis, topic classification, similar-ticket retrieval, reranking and evaluation.
+**Network\*** is an NLP pipeline for **telecom customer-support tickets** written in **Arabic and English**. It takes a raw ticket and walks it through cleaning, personal-data masking, tokenizer analysis, topic classification, similar-ticket retrieval, reranking and evaluation.
 
 It started as coursework and is organised as a single notebook, with a small interactive demo on top.
 
