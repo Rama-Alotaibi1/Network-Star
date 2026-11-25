@@ -18,9 +18,6 @@ It started as coursework and is organised as a single notebook, with a small int
 
 > **Demo:** [Open the interactive demo](https://rama-alotaibi1.github.io/Network-Star/) · **Notebook:** [`notebooks/network_pipeline.ipynb`](notebooks/network_pipeline.ipynb)
 
-<p align="center">
-  <a href="https://rama-alotaibi1.github.io/Network-Star/"><img src="assets/demo_screenshot.png" alt="network* interactive demo" width="85%"></a>
-</p>
 
 The demo runs normalisation and PII masking live in the browser using the notebook's rules. Retrieval, reranking and tokenizer results are recorded outputs from the notebook.
 
