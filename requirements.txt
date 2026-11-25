@@ -1,0 +1,9 @@
+transformers
+datasets
+accelerate
+torch
+pandas
+matplotlib
+scikit-learn
+sentence-transformers
+faiss-cpu
