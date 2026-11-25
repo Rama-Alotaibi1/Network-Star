@@ -16,7 +16,7 @@
 
 It started as coursework and is organised as a single notebook, with a small interactive demo on top.
 
-> **Demo:** [Open the interactive demo](https://YOUR_USERNAME.github.io/network-star/) · **Notebook:** [`notebooks/network_pipeline.ipynb`](notebooks/network_pipeline.ipynb)
+> **Demo:** [Open the interactive demo]([https://rama-alotaibi1.github.io/Network-Star/]) · **Notebook:** [`notebooks/network_pipeline.ipynb`](notebooks/network_pipeline.ipynb)
 
 <p align="center">
   <a href="https://YOUR_USERNAME.github.io/network-star/"><img src="assets/demo_screenshot.png" alt="network* interactive demo" width="85%"></a>
